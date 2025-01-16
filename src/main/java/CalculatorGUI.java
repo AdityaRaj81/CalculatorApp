@@ -8,15 +8,11 @@ import java.awt.event.ActionListener;
 public class CalculatorGUI extends JFrame implements ActionListener {
     private JTextField display;
     private Calculator calculator;
-    private double firstNumber;
-    private double secondNumber;
-    private String operator;
+    private StringBuilder equation;
 
     public CalculatorGUI() {
         calculator = new Calculator();
-        firstNumber = 0;
-        secondNumber = 0;
-        operator = "";
+        equation = new StringBuilder();
 
         // Set up the frame
         setTitle("Calculator");
@@ -24,27 +20,30 @@ public class CalculatorGUI extends JFrame implements ActionListener {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 
-        // Create the display field
+        // Create the display field with larger size
         display = new JTextField();
         display.setHorizontalAlignment(JTextField.RIGHT);
-        display.setFont(new Font("Arial", Font.PLAIN, 24));
+        display.setFont(new Font("Arial", Font.PLAIN, 32));
         display.setEditable(false);
+        display.setPreferredSize(new Dimension(400, 100));
         add(display, BorderLayout.NORTH);
 
-        // Create the buttons panel
+        // Create the buttons panel with smaller buttons
         JPanel panel = new JPanel();
-        panel.setLayout(new GridLayout(4, 4, 10, 10));
+        panel.setLayout(new GridLayout(5, 4, 5, 5));
 
         String[] buttons = {
             "7", "8", "9", "/", 
             "4", "5", "6", "*", 
             "1", "2", "3", "-", 
-            "0", ".", "=", "+"
+            "0", ".", "=", "+",
+            "AC", "%", "x²", "x³"
         };
 
         for (String text : buttons) {
             JButton button = new JButton(text);
-            button.setFont(new Font("Arial", Font.PLAIN, 24));
+            button.setFont(new Font("Arial", Font.PLAIN, 18));
+            button.setPreferredSize(new Dimension(75, 75));
             button.addActionListener(this);
             panel.add(button);
         }
@@ -56,38 +55,68 @@ public class CalculatorGUI extends JFrame implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         String command = e.getActionCommand();
 
-        if (command.charAt(0) >= '0' && command.charAt(0) <= '9' || command.equals(".")) {
-            display.setText(display.getText() + command);
+        if ((command.charAt(0) >= '0' && command.charAt(0) <= '9') || command.equals(".")) {
+            equation.append(command);
+            display.setText(equation.toString());
         } else if (command.equals("=")) {
-            secondNumber = Double.parseDouble(display.getText());
-            double result = 0;
+            try {
+                double result = evaluate(equation.toString());
+                display.setText(equation.append(" = ").append(result).toString());
+                equation.setLength(0); // Clear the equation for new input
+            } catch (Exception ex) {
+                display.setText("Error");
+                equation.setLength(0); // Clear the equation for new input
+            }
+        } else if (command.equals("AC")) {
+            equation.setLength(0);
+            display.setText("");
+        } else if (command.equals("%")) {
+            equation.append(" % ");
+            display.setText(equation.toString());
+        } else if (command.equals("x²")) {
+            double number = Double.parseDouble(equation.toString().trim());
+            double result = number * number;
+            display.setText(equation + "² = " + result);
+            equation.setLength(0);
+        } else if (command.equals("x³")) {
+            double number = Double.parseDouble(equation.toString().trim());
+            double result = number * number * number;
+            display.setText(equation + "³ = " + result);
+            equation.setLength(0);
+        } else {
+            equation.append(" ").append(command).append(" ");
+            display.setText(equation.toString());
+        }
+    }
+
+    private double evaluate(String equation) {
+        String[] tokens = equation.split(" ");
+        double result = Double.parseDouble(tokens[0]);
+
+        for (int i = 1; i < tokens.length; i += 2) {
+            String operator = tokens[i];
+            double operand = Double.parseDouble(tokens[i + 1]);
 
             switch (operator) {
                 case "+":
-                    result = calculator.add(firstNumber, secondNumber);
+                    result = calculator.add(result, operand);
                     break;
                 case "-":
-                    result = calculator.subtract(firstNumber, secondNumber);
+                    result = calculator.subtract(result, operand);
                     break;
                 case "*":
-                    result = calculator.multiply(firstNumber, secondNumber);
+                    result = calculator.multiply(result, operand);
                     break;
                 case "/":
-                    try {
-                        result = calculator.divide(firstNumber, secondNumber);
-                    } catch (ArithmeticException ex) {
-                        display.setText("Error");
-                        return;
-                    }
+                    result = calculator.divide(result, operand);
+                    break;
+                case "%":
+                    result = result * operand / 100;
                     break;
             }
-            display.setText(String.valueOf(result));
-            operator = "";
-        } else {
-            firstNumber = Double.parseDouble(display.getText());
-            operator = command;
-            display.setText("");
         }
+
+        return result;
     }
 
     public static void main(String[] args) {
