@@ -1,4 +1,3 @@
-```markdown
 # CalculatorApp
 
 A simple calculator application with both frontend (Swing-based GUI) and backend (calculator logic) implemented in Java.
@@ -6,12 +5,13 @@ A simple calculator application with both frontend (Swing-based GUI) and backend
 ## Folder Structure
 
 ```
+
 CalculatorApp/
 ├── src/
-│   ├── main/
-│   │   ├── java/
-│   │   │   ├── Calculator.java
-│   │   │   └── CalculatorGUI.java
+│ ├── main/
+│ │ ├── java/
+│ │ │ ├── Calculator.java
+│ │ │ └── CalculatorGUI.java
 ├── bin/
 └── README.md
 ```
@@ -37,6 +37,6 @@ CalculatorApp/
 
 - Basic arithmetic operations: addition, subtraction, multiplication, and division.
 - Simple and user-friendly GUI using Swing.
-```
+  
 
 Now you have a complete project structure with both backend logic and frontend GUI for a simple calculator application in Java.
