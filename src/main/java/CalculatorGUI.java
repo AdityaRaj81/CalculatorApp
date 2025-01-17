@@ -4,19 +4,23 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Stack;
 
 public class CalculatorGUI extends JFrame implements ActionListener {
     private JTextField display;
+    private JTextArea history;
     private Calculator calculator;
     private StringBuilder equation;
+    private Stack<String> historyStack;
 
     public CalculatorGUI() {
         calculator = new Calculator();
         equation = new StringBuilder();
+        historyStack = new Stack<>();
 
         // Set up the frame
-        setTitle("Calculator");
-        setSize(400, 600);
+        setTitle("Advanced Calculator");
+        setSize(800, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 
@@ -25,25 +29,39 @@ public class CalculatorGUI extends JFrame implements ActionListener {
         display.setHorizontalAlignment(JTextField.RIGHT);
         display.setFont(new Font("Arial", Font.PLAIN, 32));
         display.setEditable(false);
-        display.setPreferredSize(new Dimension(400, 100));
+        display.setPreferredSize(new Dimension(800, 100));
+        display.setBackground(new Color(30, 15, 30)); // Dark background
+        display.setForeground(new Color(0, 255, 0)); // Bright green text
         add(display, BorderLayout.NORTH);
+
+        // Create the history area
+        history = new JTextArea();
+        history.setFont(new Font("Arial", Font.PLAIN, 16));
+        history.setEditable(false);
+        history.setBackground(new Color(50, 50, 50)); // Dark gray background
+        history.setForeground(new Color(255, 255, 255)); // White text
+        JScrollPane scrollPane = new JScrollPane(history);
+        scrollPane.setPreferredSize(new Dimension(800, 150));
+        add(scrollPane, BorderLayout.SOUTH);
 
         // Create the buttons panel with smaller buttons
         JPanel panel = new JPanel();
-        panel.setLayout(new GridLayout(5, 4, 5, 5));
+        panel.setLayout(new GridLayout(5, 6, 5, 5));
 
         String[] buttons = {
-            "7", "8", "9", "/", 
-            "4", "5", "6", "*", 
-            "1", "2", "3", "-", 
-            "0", ".", "=", "+",
-            "AC", "%", "x²", "x³"
+            "AC", "±", "%", "√", "n!", "1/x",
+            "7", "8", "9", "/", "x²", "^",
+            "4", "5", "6", "*", "|x|", "sin",
+            "1", "2", "3", "-", "log", "cos",
+            "0", ".", "=", "+", "ln", "tan",
         };
 
         for (String text : buttons) {
             JButton button = new JButton(text);
             button.setFont(new Font("Arial", Font.PLAIN, 18));
             button.setPreferredSize(new Dimension(75, 75));
+            button.setBackground(new Color(70, 70, 70)); // Darker gray background
+            button.setForeground(new Color(255, 255, 255)); // White text
             button.addActionListener(this);
             panel.add(button);
         }
@@ -61,7 +79,10 @@ public class CalculatorGUI extends JFrame implements ActionListener {
         } else if (command.equals("=")) {
             try {
                 double result = evaluate(equation.toString());
-                display.setText(equation.append(" = ").append(result).toString());
+                String resultString = equation.append(" = ").append(result).toString();
+                display.setText(resultString);
+                historyStack.push(resultString);
+                updateHistory();
                 equation.setLength(0); // Clear the equation for new input
             } catch (Exception ex) {
                 display.setText("Error");
@@ -82,6 +103,68 @@ public class CalculatorGUI extends JFrame implements ActionListener {
             double number = Double.parseDouble(equation.toString().trim());
             double result = number * number * number;
             display.setText(equation + "³ = " + result);
+            equation.setLength(0);
+        } else if (command.equals("√")) {
+            double number = Double.parseDouble(equation.toString().trim());
+            double result = calculator.sqrt(number);
+            display.setText("√" + equation + " = " + result);
+            equation.setLength(0);
+        } else if (command.equals("1/x")) {
+            double number = Double.parseDouble(equation.toString().trim());
+            double result = calculator.reciprocal(number);
+            display.setText("1/" + equation + " = " + result);
+            equation.setLength(0);
+        } else if (command.equals("±")) {
+            double number = Double.parseDouble(equation.toString().trim());
+            double result = -number;
+            display.setText(equation.toString() + " = " + result);
+            equation.setLength(0);
+        } else if (command.equals("^")) {
+            equation.append(" ^ ");
+            display.setText(equation.toString());
+        } else if (command.equals("|x|")) {
+            double number = Double.parseDouble(equation.toString().trim());
+            double result = calculator.abs(number);
+            display.setText("|" + equation + "| = " + result);
+            equation.setLength(0);
+        } else if (command.equals("n!")) {
+            int number = Integer.parseInt(equation.toString().trim());
+            long result = calculator.factorial(number);
+            display.setText(number + "! = " + result);
+            equation.setLength(0);
+        } else if (command.equals("sin")) {
+            double number = Double.parseDouble(equation.toString().trim());
+            double result = calculator.sin(number);
+            display.setText("sin(" + equation + ") = " + result);
+            equation.setLength(0);
+        } else if (command.equals("cos")) {
+            double number = Double.parseDouble(equation.toString().trim());
+            double result = calculator.cos(number);
+            display.setText("cos(" + equation + ") = " + result);
+            equation.setLength(0);
+        } else if (command.equals("tan")) {
+            double number = Double.parseDouble(equation.toString().trim());
+            double result = calculator.tan(number);
+            display.setText("tan(" + equation + ") = " + result);
+            equation.setLength(0);
+        } else if (command.equals("log")) {
+            double number = Double.parseDouble(equation.toString().trim());
+            double result = calculator.log(number);
+            display.setText("log(" + equation + ") = " + result);
+            equation.setLength(0);
+        } else if (command.equals("ln")) {
+            double number = Double.parseDouble(equation.toString().trim());
+            double result = Math.log(number);
+            display.setText("ln(" + equation + ") = " + result);
+            equation.setLength(0);
+        } else if (command.equals("exp")) {
+            double number = Double.parseDouble(equation.toString().trim());
+            double result = calculator.exp(number);
+            display.setText("exp(" + equation + ") = " + result);
+            equation.setLength(0);
+        } else if (command.equals("π")) {
+            double result = Math.PI;
+            display.setText("π = " + result);
             equation.setLength(0);
         } else {
             equation.append(" ").append(command).append(" ");
@@ -113,10 +196,20 @@ public class CalculatorGUI extends JFrame implements ActionListener {
                 case "%":
                     result = result * operand / 100;
                     break;
+                case "^":
+                    result = calculator.power(result, operand);
+                    break;
             }
         }
 
         return result;
+    }
+
+    private void updateHistory() {
+        history.setText("");
+        for (String entry : historyStack) {
+            history.append(entry + "\n");
+        }
     }
 
     public static void main(String[] args) {
