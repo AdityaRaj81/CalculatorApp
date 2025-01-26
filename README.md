@@ -43,3 +43,14 @@ CalculatorApp/
 ![Example Image](https://github.com/AdityaRaj81/CalculatorApp/blob/main/Screenshot.png)
 
 
+<div align="center">
+
+### Behind the Code
+
+Code brewed by [Aditya Raj](https://github.com/adityaraj81) ☕✨  
+
+_"Code. Sleep. Eat. Repeat."_
+
+</div>
+
+
