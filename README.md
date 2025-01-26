@@ -37,6 +37,9 @@ CalculatorApp/
 
 - Basic arithmetic operations: addition, subtraction, multiplication, and division.
 - Simple and user-friendly GUI using Swing.
-  
 
-Now you have a complete project structure with both backend logic and frontend GUI for a simple calculator application in Java.
+## This is how the calculator looks when it's running:
+
+![Example Image](https://github.com/AdityaRaj81/CalculatorApp/blob/main/Screenshot.png)
+
+
